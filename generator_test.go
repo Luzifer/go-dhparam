@@ -9,7 +9,7 @@ import (
 )
 
 func execGeneratorIntegration(t *testing.T, bitsize, generator int) {
-	dh, err := GenerateDHParam(bitsize, generator, nil)
+	dh, err := Generate(bitsize, generator, nil)
 	if err != nil {
 		t.Fatalf("Unable to generate DH params: %s", err)
 	}

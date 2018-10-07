@@ -13,11 +13,11 @@ const pemHeader = "DH PARAMETERS"
 type GeneratorResult uint
 
 const (
-	// A possible (non-verified) prime number was found (OpenSSL: ".")
+	// GeneratorFoundPossiblePrime signals a possible (non-verified) prime number was found (OpenSSL: ".")
 	GeneratorFoundPossiblePrime GeneratorResult = iota
-	// The prime number itself was verified but is not yet considered "safe" (OpenSSL: "+")
+	// GeneratorFirstConfirmation signals the prime number itself was verified but is not yet considered "safe" (OpenSSL: "+")
 	GeneratorFirstConfirmation
-	// The prime number now is considered "safe" (OpenSSL: "*")
+	// GeneratorSafePrimeFound signals the prime number now is considered "safe" (OpenSSL: "*")
 	GeneratorSafePrimeFound
 )
 
@@ -26,8 +26,8 @@ type GeneratorCallback func(r GeneratorResult)
 
 func nullCallback(r GeneratorResult) {}
 
-// GenerateDHParam determines a prime number according to the generator having the specified number of bits
-func GenerateDHParam(bits, generator int, cb GeneratorCallback) (*DH, error) {
+// Generate determines a prime number according to the generator having the specified number of bits
+func Generate(bits, generator int, cb GeneratorCallback) (*DH, error) {
 	var (
 		err       error
 		padd, rem int64
@@ -130,7 +130,7 @@ func genRand(bits int) (*big.Int, error) {
 
 	buf := make([]byte, bytes)
 	if _, err := rand.Read(buf); err != nil {
-		errors.Wrap(err, "Unable to read random")
+		return nil, errors.Wrap(err, "Unable to read random")
 	}
 
 	if bit == 0 {
