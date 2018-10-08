@@ -9,4 +9,4 @@ go:
 
 script:
   - go vet
-  - go test -v -cover
+  - go test -v -cover -timeout 1800s
