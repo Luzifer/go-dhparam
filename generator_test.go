@@ -3,6 +3,8 @@ package dhparam
 import (
 	"bytes"
 	"fmt"
+	"io/ioutil"
+	"os"
 	"os/exec"
 	"strings"
 	"testing"
@@ -21,7 +23,19 @@ func execGeneratorIntegration(t *testing.T, bitsize int, generator Generator) {
 
 	buf := new(bytes.Buffer)
 
-	cmd := exec.Command("openssl", "dhparam", "-inform", "PEM", "-in", "-", "-check", "-noout", "-text")
+	f, err := ioutil.TempFile("", "dhparam.*")
+	if err != nil {
+		t.Fatalf("Unable to create tempfile: %s", err)
+	}
+	defer os.Remove(f.Name())
+
+	if _, err = f.Write(pem); err != nil {
+		t.Fatalf("Unable to write tempfile: %s", err)
+	}
+
+	f.Close()
+
+	cmd := exec.Command("openssl", "dhparam", "-inform", "PEM", "-in", f.Name(), "-check", "-noout", "-text")
 	cmd.Stdin = bytes.NewReader(pem)
 	cmd.Stdout = buf
 	cmd.Stderr = buf
