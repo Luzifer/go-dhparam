@@ -6,17 +6,17 @@ import (
 	"github.com/pkg/errors"
 )
 
-const dh_check_p_not_prime = 0x01
-const dh_check_p_not_safe_prime = 0x02
-const dh_unable_to_check_generator = 0x04
-const dh_not_suitable_generator = 0x08
-const dh_check_q_not_prime = 0x10
-const dh_check_invalid_q_value = 0x20
-const dh_check_invalid_j_value = 0x40
+const dhCheckPNotPrime = 0x01
+const dhCheckPNotSafePrime = 0x02
+const dhUnableToCheckGenerator = 0x04
+const dhNotSuitableGenerator = 0x08
+const dhCheckQNotPrime = 0x10
+const dhCheckInvalidQValue = 0x20
+const dhCheckInvalidJValue = 0x40
 
 // ErrAllParametersOK is defined to check whether the returned error from Check is indeed no error
 // For simplicity reasons it is defined as an error instead of an additional result parameter
-var ErrAllParametersOK = errors.New("DH parameters appear to be ok.")
+var ErrAllParametersOK = errors.New("DH parameters appear to be ok")
 
 // Check returns a number of errors and an "ok" bool. If the "ok" bool is set to true, still one
 // error is returned: ErrAllParametersOK. If "ok" is false, the error list will contain at least
@@ -29,37 +29,37 @@ func (d DH) Check() ([]error, bool) {
 
 	i := d.check()
 
-	if i&dh_check_p_not_prime > 0 {
+	if i&dhCheckPNotPrime > 0 {
 		result = append(result, errors.New("WARNING: p value is not prime"))
 		ok = false
 	}
 
-	if i&dh_check_p_not_safe_prime > 0 {
+	if i&dhCheckPNotSafePrime > 0 {
 		result = append(result, errors.New("WARNING: p value is not a safe prime"))
 		ok = false
 	}
 
-	if i&dh_check_q_not_prime > 0 {
+	if i&dhCheckQNotPrime > 0 {
 		result = append(result, errors.New("WARNING: q value is not a prime"))
 		ok = false
 	}
 
-	if i&dh_check_invalid_q_value > 0 {
+	if i&dhCheckInvalidQValue > 0 {
 		result = append(result, errors.New("WARNING: q value is invalid"))
 		ok = false
 	}
 
-	if i&dh_check_invalid_j_value > 0 {
+	if i&dhCheckInvalidJValue > 0 {
 		result = append(result, errors.New("WARNING: j value is invalid"))
 		ok = false
 	}
 
-	if i&dh_unable_to_check_generator > 0 {
+	if i&dhUnableToCheckGenerator > 0 {
 		result = append(result, errors.New("WARNING: unable to check the generator value"))
 		ok = false
 	}
 
-	if i&dh_not_suitable_generator > 0 {
+	if i&dhNotSuitableGenerator > 0 {
 		result = append(result, errors.New("WARNING: the g value is not a generator"))
 		ok = false
 	}
@@ -79,24 +79,24 @@ func (d DH) check() int {
 	case 2:
 		l := new(big.Int)
 		if l.Mod(d.P, big.NewInt(24)); l.Int64() != 11 {
-			ret |= DH_NOT_SUITABLE_GENERATOR
+			ret |= dhNotSuitableGenerator
 		}
 	case 5:
 		l := new(big.Int)
 		if l.Mod(d.P, big.NewInt(10)); l.Int64() != 3 && l.Int64() != 7 {
-			ret |= DH_NOT_SUITABLE_GENERATOR
+			ret |= dhNotSuitableGenerator
 		}
 	default:
-		ret |= DH_UNABLE_TO_CHECK_GENERATOR
+		ret |= dhUnableToCheckGenerator
 	}
 
 	if !d.P.ProbablyPrime(1) {
-		ret |= DH_CHECK_P_NOT_PRIME
+		ret |= dhCheckPNotPrime
 	} else {
 		t1 := new(big.Int)
 		t1.Rsh(d.P, 1)
 		if !t1.ProbablyPrime(1) {
-			ret |= DH_CHECK_P_NOT_SAFE_PRIME
+			ret |= dhCheckPNotSafePrime
 		}
 	}
 
