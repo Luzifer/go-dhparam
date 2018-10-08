@@ -10,8 +10,19 @@ import (
 	"testing"
 )
 
+func opensslOutput(r GeneratorResult) {
+	switch r {
+	case GeneratorFoundPossiblePrime:
+		os.Stderr.WriteString(".")
+	case GeneratorFirstConfirmation:
+		os.Stderr.WriteString("+")
+	case GeneratorSafePrimeFound:
+		os.Stderr.WriteString("*\n")
+	}
+}
+
 func execGeneratorIntegration(t *testing.T, bitsize int, generator Generator) {
-	dh, err := Generate(bitsize, generator, nil)
+	dh, err := Generate(bitsize, generator, opensslOutput)
 	if err != nil {
 		t.Fatalf("Unable to generate DH params: %s", err)
 	}

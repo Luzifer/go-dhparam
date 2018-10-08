@@ -3,7 +3,7 @@ package dhparam
 import "testing"
 
 func TestCheckOwn(t *testing.T) {
-	dh, err := Generate(512, 2, nil)
+	dh, err := Generate(512, 2, opensslOutput)
 	if err != nil {
 		t.Fatalf("Could not generate DH parameters: %s", err)
 	}
