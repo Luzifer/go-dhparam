@@ -8,7 +8,7 @@ import (
 	"testing"
 )
 
-func execGeneratorIntegration(t *testing.T, bitsize, generator int) {
+func execGeneratorIntegration(t *testing.T, bitsize int, generator Generator) {
 	dh, err := Generate(bitsize, generator, nil)
 	if err != nil {
 		t.Fatalf("Unable to generate DH params: %s", err)
@@ -50,17 +50,17 @@ func execGeneratorIntegration(t *testing.T, bitsize, generator int) {
 }
 
 func TestGenerator512bit(t *testing.T) {
-	execGeneratorIntegration(t, 512, 2)
+	execGeneratorIntegration(t, 512, GeneratorTwo)
 }
 
 func TestGenerator1024bit(t *testing.T) {
-	execGeneratorIntegration(t, 1024, 2)
+	execGeneratorIntegration(t, 1024, GeneratorTwo)
 }
 
 func TestGenerator2048bit(t *testing.T) {
-	execGeneratorIntegration(t, 2048, 2)
+	execGeneratorIntegration(t, 2048, GeneratorTwo)
 }
 
 func TestGenerator5(t *testing.T) {
-	execGeneratorIntegration(t, 512, 5)
+	execGeneratorIntegration(t, 512, GeneratorFive)
 }

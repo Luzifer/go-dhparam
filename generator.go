@@ -21,6 +21,16 @@ const (
 	GeneratorSafePrimeFound
 )
 
+// Generator is the generator number to use when determining the prime number
+type Generator int
+
+const (
+	// GeneratorTwo uses a generator 2
+	GeneratorTwo Generator = 2
+	// GeneratorFive uses a generator 5
+	GeneratorFive = 5
+)
+
 // GeneratorCallback is a type of function to receive GeneratorResults while the prime number is determined
 type GeneratorCallback func(r GeneratorResult)
 
@@ -28,10 +38,10 @@ func nullCallback(r GeneratorResult) {}
 
 // Generate determines a prime number according to the generator having the specified number of bits
 //
-// In OpenSSL defined generators are 2 and 5. Others are supported but the verification is not possible.
+// In OpenSSL defined generators are 2 and 5. Others are supported but the verification is not supported in an extend as with generators 2 and 5.
 // The bit size should be adjusted to be high enough for the current requirements. Also you should keep
 // in mind the higher the bitsize, the longer the generation might take.
-func Generate(bits, generator int, cb GeneratorCallback) (*DH, error) {
+func Generate(bits int, generator Generator, cb GeneratorCallback) (*DH, error) {
 	var (
 		err       error
 		padd, rem int64
@@ -79,7 +89,7 @@ func Generate(bits, generator int, cb GeneratorCallback) (*DH, error) {
 
 	return &DH{
 		P: prime,
-		G: generator,
+		G: int(generator),
 	}, nil
 }
 
