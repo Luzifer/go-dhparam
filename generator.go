@@ -96,13 +96,11 @@ func GenerateWithContext(ctx context.Context, bits int, generator Generator, cb 
 
 			if t.ProbablyPrime(0) {
 				cb(GeneratorSafePrimeFound)
-				break
+				return &DH{
+					P: prime,
+					G: int(generator),
+				}, nil
 			}
-
-			return &DH{
-				P: prime,
-				G: int(generator),
-			}, nil
 		}
 	}
 }
