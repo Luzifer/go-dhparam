@@ -1,6 +1,7 @@
 package dhparam
 
 import (
+	"context"
 	"crypto/rand"
 	"math/big"
 
@@ -42,6 +43,14 @@ func nullCallback(r GeneratorResult) {}
 // The bit size should be adjusted to be high enough for the current requirements. Also you should keep
 // in mind the higher the bitsize, the longer the generation might take.
 func Generate(bits int, generator Generator, cb GeneratorCallback) (*DH, error) {
+	// Invoke GenerateWithContext with a background context
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	return GenerateWithContext(ctx, bits, generator, cb)
+}
+
+// GenerateWithContext is just like the Generate function, but it accepts a ctx parameter with a context, that can be used to interrupt the generation if needed
+func GenerateWithContext(ctx context.Context, bits int, generator Generator, cb GeneratorCallback) (*DH, error) {
 	var (
 		err       error
 		padd, rem int64
@@ -62,35 +71,40 @@ func Generate(bits int, generator Generator, cb GeneratorCallback) (*DH, error) 
 	}
 
 	for {
-		if prime, err = genPrime(bits, big.NewInt(padd), big.NewInt(rem)); err != nil {
-			return nil, err
-		}
+		select {
+		case <-ctx.Done():
+			return nil, context.Canceled
+		default:
+			if prime, err = genPrime(bits, big.NewInt(padd), big.NewInt(rem)); err != nil {
+				return nil, err
+			}
 
-		if prime.BitLen() > bits {
-			continue
-		}
+			if prime.BitLen() > bits {
+				continue
+			}
 
-		t := new(big.Int)
-		t.Rsh(prime, 1)
+			t := new(big.Int)
+			t.Rsh(prime, 1)
 
-		cb(GeneratorFoundPossiblePrime)
+			cb(GeneratorFoundPossiblePrime)
 
-		if prime.ProbablyPrime(0) {
-			cb(GeneratorFirstConfirmation)
-		} else {
-			continue
-		}
+			if prime.ProbablyPrime(0) {
+				cb(GeneratorFirstConfirmation)
+			} else {
+				continue
+			}
 
-		if t.ProbablyPrime(0) {
-			cb(GeneratorSafePrimeFound)
-			break
+			if t.ProbablyPrime(0) {
+				cb(GeneratorSafePrimeFound)
+				break
+			}
+
+			return &DH{
+				P: prime,
+				G: int(generator),
+			}, nil
 		}
 	}
-
-	return &DH{
-		P: prime,
-		G: int(generator),
-	}, nil
 }
 
 func genPrime(bits int, padd, rem *big.Int) (*big.Int, error) {
