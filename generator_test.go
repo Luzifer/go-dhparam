@@ -2,12 +2,14 @@ package dhparam
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"io/ioutil"
 	"os"
 	"os/exec"
 	"strings"
 	"testing"
+	"time"
 )
 
 func opensslOutput(r GeneratorResult) {
@@ -84,6 +86,23 @@ func TestGenerator1024bit(t *testing.T) {
 
 func TestGenerator2048bit(t *testing.T) {
 	execGeneratorIntegration(t, 2048, GeneratorTwo)
+}
+
+func TestGeneratorInterrupt(t *testing.T) {
+	start := time.Now()
+	ctx, cancel := context.WithTimeout(context.TODO(), 100*time.Millisecond)
+	dh, err := GenerateWithContext(ctx, 4096, GeneratorTwo, nil)
+	cancel()
+	duration := time.Since(start)
+	if duration > 1*time.Second {
+		t.Fatal("Function was not canceled early")
+	}
+	if err != context.DeadlineExceeded {
+		t.Fatal("Expected error to be context.DeadlineExceeded")
+	}
+	if dh != nil {
+		t.Fatal("Expected result to be nil")
+	}
 }
 
 func TestGenerator5(t *testing.T) {
