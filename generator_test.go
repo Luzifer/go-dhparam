@@ -97,8 +97,8 @@ func TestGeneratorInterrupt(t *testing.T) {
 	if duration > 1*time.Second {
 		t.Fatal("Function was not canceled early")
 	}
-	if err != context.Canceled {
-		t.Fatal("Expected error to be context.Canceled")
+	if err != context.DeadlineExceeded {
+		t.Fatal("Expected error to be context.DeadlineExceeded")
 	}
 	if dh != nil {
 		t.Fatal("Expected result to be nil")

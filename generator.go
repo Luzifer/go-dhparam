@@ -44,9 +44,7 @@ func nullCallback(r GeneratorResult) {}
 // in mind the higher the bitsize, the longer the generation might take.
 func Generate(bits int, generator Generator, cb GeneratorCallback) (*DH, error) {
 	// Invoke GenerateWithContext with a background context
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-	return GenerateWithContext(ctx, bits, generator, cb)
+	return GenerateWithContext(context.Background(), bits, generator, cb)
 }
 
 // GenerateWithContext is just like the Generate function, but it accepts a ctx parameter with a context, that can be used to interrupt the generation if needed
@@ -73,7 +71,7 @@ func GenerateWithContext(ctx context.Context, bits int, generator Generator, cb 
 	for {
 		select {
 		case <-ctx.Done():
-			return nil, context.Canceled
+			return nil, ctx.Err()
 		default:
 			if prime, err = genPrime(bits, big.NewInt(padd), big.NewInt(rem)); err != nil {
 				return nil, err
