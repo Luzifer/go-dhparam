@@ -62,7 +62,7 @@ func execGeneratorIntegration(t *testing.T, bitsize int, generator Generator) {
 	for _, expect := range []string{
 		fmt.Sprintf("DH Parameters: (%d bit)", bitsize),
 		"DH parameters appear to be ok.",
-		fmt.Sprintf("generator: %d (0x%x)", generator, generator),
+		fmt.Sprintf("G:    %d (0x%x)", generator, generator),
 	} {
 		if !strings.Contains(result, expect) {
 			t.Errorf("Did not find expected OpenSSL output: %q", expect)
