@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"strings"
@@ -36,7 +35,7 @@ func execGeneratorIntegration(t *testing.T, bitsize int, generator Generator) {
 
 	buf := new(bytes.Buffer)
 
-	f, err := ioutil.TempFile("", "dhparam.*")
+	f, err := os.CreateTemp("", "dhparam.*")
 	if err != nil {
 		t.Fatalf("Unable to create tempfile: %s", err)
 	}

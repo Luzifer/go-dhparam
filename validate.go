@@ -3,7 +3,7 @@ package dhparam
 import (
 	"math/big"
 
-	"github.com/pkg/errors"
+	"errors"
 )
 
 const dhCheckPNotPrime = 0x01
@@ -23,7 +23,7 @@ var ErrAllParametersOK = errors.New("DH parameters appear to be ok")
 // one error not being equal to ErrAllParametersOK.
 func (d DH) Check() ([]error, bool) {
 	var (
-		result = []error{}
+		result []error
 		ok     = true
 	)
 

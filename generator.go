@@ -3,9 +3,8 @@ package dhparam
 import (
 	"context"
 	"crypto/rand"
+	"fmt"
 	"math/big"
-
-	"github.com/pkg/errors"
 )
 
 const pemHeader = "DH PARAMETERS"
@@ -35,12 +34,12 @@ const (
 // GeneratorCallback is a type of function to receive GeneratorResults while the prime number is determined
 type GeneratorCallback func(r GeneratorResult)
 
-func nullCallback(r GeneratorResult) {}
+func nullCallback(_ GeneratorResult) {}
 
 // Generate determines a prime number according to the generator having the specified number of bits
 //
 // In OpenSSL defined generators are 2 and 5. Others are supported but the verification is not supported in an extend as with generators 2 and 5.
-// The bit size should be adjusted to be high enough for the current requirements. Also you should keep
+// The bit size should be adjusted to be high enough for the current requirements. Also, you should keep
 // in mind the higher the bitsize, the longer the generation might take.
 func Generate(bits int, generator Generator, cb GeneratorCallback) (*DH, error) {
 	// Invoke GenerateWithContext with a background context
@@ -154,14 +153,14 @@ func genRand(bits int) (*big.Int, error) {
 
 	buf := make([]byte, bytes)
 	if _, err := rand.Read(buf); err != nil {
-		return nil, errors.Wrap(err, "Unable to read random")
+		return nil, fmt.Errorf("unable to read random: %w", err)
 	}
 
 	if bit == 0 {
 		buf[0] = 1
 		buf[1] |= 0x80
 	} else {
-		buf[0] |= (3 << uint(bit-1))
+		buf[0] |= 3 << uint(bit-1)
 	}
 
 	buf[0] &= byte(^mask)
