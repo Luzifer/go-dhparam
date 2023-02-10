@@ -4,9 +4,8 @@ import (
 	"bytes"
 	"encoding/asn1"
 	"encoding/pem"
+	"fmt"
 	"math/big"
-
-	"github.com/pkg/errors"
 )
 
 // DH contains a prime (P) and a generator (G) number representing the DH parameters
@@ -21,7 +20,7 @@ func Decode(pemData []byte) (*DH, error) {
 
 	out := &DH{}
 	if _, err := asn1.Unmarshal(blk.Bytes, out); err != nil {
-		return nil, errors.Wrap(err, "Could not unmarshal ASN1")
+		return nil, fmt.Errorf("could not unmarshal ASN1: %w", err)
 	}
 
 	return out, nil
@@ -31,7 +30,7 @@ func Decode(pemData []byte) (*DH, error) {
 func (d DH) ToPEM() ([]byte, error) {
 	data, err := asn1.Marshal(d)
 	if err != nil {
-		return nil, errors.Wrap(err, "Unable to marshal ASN1 data")
+		return nil, fmt.Errorf("unable to marshal ASN1 data: %w", err)
 	}
 
 	buf := new(bytes.Buffer)
