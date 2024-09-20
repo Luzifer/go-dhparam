@@ -1,18 +1,19 @@
 package dhparam
 
 import (
-	"math/big"
-
 	"errors"
+	"math/big"
 )
 
-const dhCheckPNotPrime = 0x01
-const dhCheckPNotSafePrime = 0x02
-const dhUnableToCheckGenerator = 0x04
-const dhNotSuitableGenerator = 0x08
-const dhCheckQNotPrime = 0x10
-const dhCheckInvalidQValue = 0x20
-const dhCheckInvalidJValue = 0x40
+const (
+	dhCheckPNotPrime         = 0x01
+	dhCheckPNotSafePrime     = 0x02
+	dhUnableToCheckGenerator = 0x04
+	dhNotSuitableGenerator   = 0x08
+	dhCheckQNotPrime         = 0x10
+	dhCheckInvalidQValue     = 0x20
+	dhCheckInvalidJValue     = 0x40
+)
 
 // ErrAllParametersOK is defined to check whether the returned error from Check is indeed no error
 // For simplicity reasons it is defined as an error instead of an additional result parameter
@@ -71,19 +72,20 @@ func (d DH) Check() ([]error, bool) {
 	return result, ok
 }
 
+//revive:disable-next-line:confusing-naming // Intended in this case as this is the real functionality
 func (d DH) check() int {
 	var ret int
 
 	// Check generator
 	switch d.G {
-	case 2:
+	case 2: //nolint:mnd
 		l := new(big.Int)
-		if l.Mod(d.P, big.NewInt(24)); l.Int64() != 11 {
+		if l.Mod(d.P, big.NewInt(24)); l.Int64() != 11 { //nolint:mnd
 			ret |= dhNotSuitableGenerator
 		}
-	case 5:
+	case 5: //nolint:mnd
 		l := new(big.Int)
-		if l.Mod(d.P, big.NewInt(10)); l.Int64() != 3 && l.Int64() != 7 {
+		if l.Mod(d.P, big.NewInt(10)); l.Int64() != 3 && l.Int64() != 7 { //nolint:mnd
 			ret |= dhNotSuitableGenerator
 		}
 	default:

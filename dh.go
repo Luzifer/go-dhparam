@@ -1,3 +1,5 @@
+// Package dhparam is a pure Golang implementation of the openssl
+// dhparam generator no requiring any CGO bindings
 package dhparam
 
 import (
@@ -23,7 +25,7 @@ type DH struct {
 
 // Decode reads a DH parameters struct from its PEM data
 func Decode(pemData []byte) (*DH, error) {
-	if pemData == nil || len(pemData) == 0 {
+	if len(pemData) == 0 {
 		return nil, ErrNoPem
 	}
 

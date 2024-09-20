@@ -59,9 +59,9 @@ func GenerateWithContext(ctx context.Context, bits int, generator Generator, cb 
 	}
 
 	switch generator {
-	case 2:
+	case 2: //nolint:mnd
 		padd, rem = 24, 11
-	case 5:
+	case 5: //nolint:mnd
 		padd, rem = 10, 3
 	default:
 		padd, rem = 2, 1
@@ -70,7 +70,7 @@ func GenerateWithContext(ctx context.Context, bits int, generator Generator, cb 
 	for {
 		select {
 		case <-ctx.Done():
-			return nil, ctx.Err()
+			return nil, ctx.Err() //nolint:wrapcheck // Fine in this case
 		default:
 			if prime, err = genPrime(bits, big.NewInt(padd), big.NewInt(rem)); err != nil {
 				return nil, err
@@ -107,7 +107,7 @@ func genPrime(bits int, padd, rem *big.Int) (*big.Int, error) {
 		err  error
 		p    = new(big.Int)
 		qadd = new(big.Int)
-		q    = new(big.Int)
+		q    *big.Int
 		t1   = new(big.Int)
 	)
 
@@ -146,10 +146,11 @@ func mightBePrime(i *big.Int) bool {
 	return true
 }
 
+//nolint:mnd
 func genRand(bits int) (*big.Int, error) {
 	bytes := (bits + 7) / 8
 	bit := (bits - 1) % 8
-	mask := 0xff << uint(bit+1)
+	mask := 0xff << uint(bit+1) //#nosec:G115 // Should only ever run with positive ints
 
 	buf := make([]byte, bytes)
 	if _, err := rand.Read(buf); err != nil {
@@ -160,7 +161,7 @@ func genRand(bits int) (*big.Int, error) {
 		buf[0] = 1
 		buf[1] |= 0x80
 	} else {
-		buf[0] |= 3 << uint(bit-1)
+		buf[0] |= 3 << uint(bit-1) //#nosec:G115 // Should only ever run with positive ints
 	}
 
 	buf[0] &= byte(^mask)

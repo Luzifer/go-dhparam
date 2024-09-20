@@ -11,6 +11,7 @@ import (
 	"time"
 )
 
+//nolint:errcheck,gosec,revive
 func opensslOutput(r GeneratorResult) {
 	switch r {
 	case GeneratorFoundPossiblePrime:
@@ -39,15 +40,15 @@ func execGeneratorIntegration(t *testing.T, bitsize int, generator Generator) {
 	if err != nil {
 		t.Fatalf("Unable to create tempfile: %s", err)
 	}
-	defer os.Remove(f.Name())
+	defer os.Remove(f.Name()) //nolint:errcheck
 
 	if _, err = f.Write(pem); err != nil {
 		t.Fatalf("Unable to write tempfile: %s", err)
 	}
 
-	f.Close()
+	f.Close() //nolint:errcheck,gosec,revive
 
-	cmd := exec.Command("openssl", "dhparam", "-inform", "PEM", "-in", f.Name(), "-check", "-noout", "-text")
+	cmd := exec.Command("openssl", "dhparam", "-inform", "PEM", "-in", f.Name(), "-check", "-noout", "-text") //#nosec:G204 // Only for tests
 	cmd.Stdin = bytes.NewReader(pem)
 	cmd.Stdout = buf
 	cmd.Stderr = buf

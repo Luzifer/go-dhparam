@@ -9,8 +9,8 @@ jobs:
     strategy:
       matrix:
         version:
-          - '1.19-alpine'
-          - '1.20-alpine'
+          - '1.22-alpine'
+          - '1.23-alpine'
           - alpine
 
     defaults:
