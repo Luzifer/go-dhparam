@@ -4,9 +4,9 @@ import (
 	"bytes"
 	"encoding/asn1"
 	"encoding/pem"
+	"errors"
 	"fmt"
 	"math/big"
-	"errors"
 )
 
 // ErrNoPem is returned if pemData for the Decode function is nil or empty.
@@ -23,8 +23,7 @@ type DH struct {
 
 // Decode reads a DH parameters struct from its PEM data
 func Decode(pemData []byte) (*DH, error) {
-
-	if pemData == nil || len(pemData) == nil {
+	if pemData == nil || len(pemData) == 0 {
 		return nil, ErrNoPem
 	}
 
@@ -32,7 +31,6 @@ func Decode(pemData []byte) (*DH, error) {
 	if blk == nil {
 		return nil, ErrInvalidPem
 	}
-
 
 	out := &DH{}
 	if _, err := asn1.Unmarshal(blk.Bytes, out); err != nil {
