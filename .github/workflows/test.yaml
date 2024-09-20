@@ -26,11 +26,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+
+      - name: install required packages
+        run: |
+          apk --no-cache add openssl
 
       - name: go test
         run: |
-          apk --no-cache add openssl && \
           go test -v -cover
 
 ...
