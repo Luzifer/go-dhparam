@@ -1,3 +1,8 @@
+# 1.3.0 / 2024-09-20
+
+  * Add additional errors for Decode (#4)
+  * Fix linter errors, update required Go version
+
 # 1.2.0 / 2023-02-10
 
   * Update minimum Go version and use stdlib error-wrapping (#3) (Thanks to [pete911](https://github.com/pete911))
